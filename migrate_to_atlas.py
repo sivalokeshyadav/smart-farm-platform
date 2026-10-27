@@ -34,7 +34,7 @@ def migrate(atlas_uri: str):
         atlas_col.insert_many(docs)
         print(f" - {col_name}: successfully migrated {len(docs)} documents")
 
-    print("\n✅ Migration complete! All users, bookings, godowns, and profiles now persist in MongoDB Atlas.")
+    print("\n[SUCCESS] Migration complete! All users, bookings, godowns, and profiles now persist in MongoDB Atlas.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
