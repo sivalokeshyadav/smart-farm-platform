@@ -47,6 +47,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "service": "Smart Farmer Platform API",
+        "version": "1.0.0",
+        "docs_url": "/docs",
+        "pilot_district": settings.DEFAULT_DISTRICT,
+        "pilot_state": settings.DEFAULT_STATE
+    }
+
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
