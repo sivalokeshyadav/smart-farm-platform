@@ -1,0 +1,18 @@
+# 1. Backend
+cd backend
+.\venv\Scripts\Activate.ps1
+python scripts/seed.py
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
+
+# 2. Frontend
+cd ..\frontend
+npm run dev -- --host
+
+
+# Run backend pytest suite
+cd backend
+.\venv\Scripts\pytest.exe tests -v
+
+# Run frontend build
+cd ..\frontend
+npm run build

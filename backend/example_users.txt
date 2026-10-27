@@ -1,0 +1,59 @@
+========================================================================================
+            SMART FARMER PLATFORM - ALL EXAMPLE / DEMO USER ACCOUNTS
+========================================================================================
+Default Password for all accounts: farm1234
+Backend API: http://127.0.0.1:8001/api/v1
+Frontend UI: http://localhost:5173 or network host
+
+----------------------------------------------------------------------------------------
+| No | Name                           | Phone Number | Password | Role / Function        |
+----------------------------------------------------------------------------------------
+| 01 | Ramesh Reddy                   | 9876543210   | farm1234 | FARMER                 |
+|    | Description: Primary farmer account with profile in Ulchala, Kurnool.             |
+|    | Can book market slots, reserve godowns, buy inputs, request vet appointments.    |
+----------------------------------------------------------------------------------------
+| 02 | Suresh Grain Traders           | 9876543220   | farm1234 | CROP_BUYER             |
+|    | Description: APMC licensed grain trader and buyer at Kurnool mandi.              |
+----------------------------------------------------------------------------------------
+| 03 | Mallikarjuna Natural Produces  | 9876543221   | farm1234 | CROP_SELLER / FARMER   |
+|    | Description: Farmer & certified input dealer with valid agricultural licenses.   |
+----------------------------------------------------------------------------------------
+| 04 | Rayalaseema Dairy & Cattle     | 9876543222   | farm1234 | LIVESTOCK_BUYER        |
+|    | Description: Dairy buyer and livestock procurement specialist.                    |
+----------------------------------------------------------------------------------------
+| 05 | Govardhan Cattle Breeders      | 9876543223   | farm1234 | LIVESTOCK_SELLER       |
+|    | Description: Registered livestock breeder for Murrah buffaloes and cows.         |
+----------------------------------------------------------------------------------------
+| 06 | Nagaraju Agri Engineering      | 9876543224   | farm1234 | EQUIPMENT_BUYER        |
+|    | Description: Farm implements and machinery buyer.                                 |
+----------------------------------------------------------------------------------------
+| 07 | Sri Balaji Harvester & Tractor | 9876543225   | farm1234 | EQUIPMENT_SELLER       |
+|    | Description: Tractor, rotavator, and combine harvester rental provider.          |
+----------------------------------------------------------------------------------------
+| 08 | Dr. Chandrasekhar Rao          | 9876543226   | farm1234 | VETERINARIAN           |
+|    | Description: Senior veterinarian accepting farm appointments and cattle care.    |
+----------------------------------------------------------------------------------------
+| 09 | Srinivasulu                    | 9876543211   | farm1234 | MARKET_STAFF           |
+|    | Description: Kurnool APMC mandi gate staff verifying tokens and entry QR codes.  |
+----------------------------------------------------------------------------------------
+| 10 | Venkatesh                      | 9876543212   | farm1234 | GODOWN_OPERATOR        |
+|    | Description: Warehouse Manager at APSWC managing godown storage and capacity.    |
+----------------------------------------------------------------------------------------
+| 11 | Chiranjeevi                    | 9876543227   | farm1234 | DELIVERY_WORKER        |
+|    | Description: Field delivery assistant handling last-mile logistics.               |
+----------------------------------------------------------------------------------------
+| 12 | Padmavathi                     | 9876543214   | farm1234 | HELP_DESK_OPERATOR     |
+|    | Description: Rythu Bharosa Kendra (RBK) operator helping with govt schemes.      |
+----------------------------------------------------------------------------------------
+| 13 | Admin Officer                  | 9876543215   | farm1234 | ADMIN                  |
+|    | Description: District administrator with full audit, verification & oversight.   |
+----------------------------------------------------------------------------------------
+| 14 | Dr. Anitha Reddy               | 9876543299   | farm1234 | FARMER (Pending VET)   |
+|    | Description: Candidate user awaiting privileged role approval for testing gates.  |
+----------------------------------------------------------------------------------------
+
+QUICK LOGIN TIPS:
+1. Go to the login page on frontend.
+2. Enter the Phone Number (e.g. 9876543210) and Password: farm1234.
+3. The platform automatically redirects to the relevant role dashboard.
+========================================================================================
