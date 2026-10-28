@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -43,7 +43,7 @@ import {
   useRegisterUserMutation,
 } from './services/authApi';
 import { ROUTES } from '../../routes';
-import { Sprout, Phone, Key, UserPlus, ShieldCheck } from 'lucide-react';
+import { Sprout, Phone, Key, UserPlus, ShieldCheck, ArrowRight } from 'lucide-react';
 
 const QUICK_DEMO_USERS = [
   { phone: '9876543210', name: 'Ramesh Reddy', role: 'FARMER', colorScheme: 'green', desc: 'Farmer' },
@@ -56,38 +56,53 @@ const QUICK_DEMO_USERS = [
 ];
 
 const ALL_ROLES_OPTIONS: { role: UserRole; label: string; privileged: boolean }[] = [
-  { role: 'FARMER', label: 'Farmer', privileged: false },
-  { role: 'CROP_BUYER', label: 'Crop Buyer', privileged: false },
-  { role: 'CROP_SELLER', label: 'Crop Seller', privileged: false },
+  { role: 'FARMER', label: 'Farmer (రైతు)', privileged: false },
+  { role: 'CROP_BUYER', label: 'Crop Buyer / Mandi Trader', privileged: false },
+  { role: 'CROP_SELLER', label: 'Crop Seller / Input Dealer', privileged: false },
   { role: 'LIVESTOCK_BUYER', label: 'Livestock Buyer', privileged: false },
   { role: 'LIVESTOCK_SELLER', label: 'Livestock Seller', privileged: false },
-  { role: 'EQUIPMENT_BUYER', label: 'Equipment Buyer', privileged: false },
+  { role: 'EQUIPMENT_BUYER', label: 'Equipment Rental Buyer', privileged: false },
   { role: 'EQUIPMENT_SELLER', label: 'Equipment Rental Provider', privileged: false },
-  { role: 'VETERINARIAN', label: 'Veterinarian', privileged: true },
-  { role: 'MARKET_STAFF', label: 'Market Yard Staff', privileged: true },
-  { role: 'GODOWN_OPERATOR', label: 'Godown Operator', privileged: true },
+  { role: 'VETERINARIAN', label: 'Veterinarian (Doctor)', privileged: true },
+  { role: 'MARKET_STAFF', label: 'Market Yard Staff (APMC Gate)', privileged: true },
+  { role: 'GODOWN_OPERATOR', label: 'Godown Operator (Warehouse)', privileged: true },
   { role: 'DELIVERY_WORKER', label: 'Delivery & Field Logistics', privileged: false },
-  { role: 'HELP_DESK_OPERATOR', label: 'Govt Scheme Operator', privileged: true },
+  { role: 'HELP_DESK_OPERATOR', label: 'Help Desk / RBK Operator', privileged: true },
   { role: 'ADMIN', label: 'District Admin / Collectorate', privileged: true },
 ];
 
-export const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  defaultTab?: 'login' | 'register';
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) => {
   const { language } = useSelector((state: RootState) => state.auth);
   const t = translations[language];
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();
 
+  const [tabIndex, setTabIndex] = useState<number>(defaultTab === 'register' ? 1 : 0);
+
+  useEffect(() => {
+    if (defaultTab === 'register') {
+      setTabIndex(1);
+    } else {
+      setTabIndex(0);
+    }
+  }, [defaultTab]);
+
+  // Login State
   const [phone, setPhone] = useState<string>('9876543210');
-  const [otp, setOtp] = useState<string>('');
   const [password, setPassword] = useState<string>('farm1234');
+  const [otp, setOtp] = useState<string>('');
   const [otpSent, setOtpSent] = useState<boolean>(false);
 
-  // Registration Form State
+  // Registration State
   const [regName, setRegName] = useState<string>('');
   const [regPhone, setRegPhone] = useState<string>('');
   const [regEmail, setRegEmail] = useState<string>('');
-  const [regPassword, setRegPassword] = useState<string>('');
+  const [regPassword, setRegPassword] = useState<string>('farm1234');
   const [regState, setRegState] = useState<string>('Andhra Pradesh');
   const [regDistrict, setRegDistrict] = useState<string>('Kurnool');
   const [regMandal, setRegMandal] = useState<string>('Kurnool Rural');
@@ -112,12 +127,12 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await loginWithPassword({ phone: targetPhone, password: targetPass }).unwrap();
       dispatch(setCredentials({ token: res.access_token, user: res.user }));
-      toast({ title: `Welcome, ${res.user.name}!`, status: 'success', duration: 2000 });
+      toast({ title: `Welcome, ${res.user.name}!`, status: 'success', duration: 2500 });
       navigate(ROUTES.HOME);
     } catch (err: any) {
       toast({
         title: 'Login Failed',
-        description: err?.data?.detail || 'Invalid phone or password. Default is farm1234.',
+        description: err?.data?.detail || 'Invalid phone or password. Default password is farm1234.',
         status: 'error',
       });
     }
@@ -152,7 +167,7 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await verifyOtp({ phone, otp }).unwrap();
       dispatch(setCredentials({ token: res.access_token, user: res.user }));
-      toast({ title: `Welcome, ${res.user.name}!`, status: 'success', duration: 2000 });
+      toast({ title: `Welcome, ${res.user.name}!`, status: 'success', duration: 2500 });
       navigate(ROUTES.HOME);
     } catch (err: any) {
       toast({ title: 'Invalid OTP', description: err?.data?.detail, status: 'error' });
@@ -162,7 +177,7 @@ export const LoginPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regPhone || regPhone.length < 10 || !regName || !regPassword) {
-      toast({ title: 'Please fill in all mandatory fields', status: 'warning' });
+      toast({ title: 'Please fill in Full Name, 10-digit Mobile, and Password', status: 'warning' });
       return;
     }
 
@@ -184,8 +199,8 @@ export const LoginPage: React.FC = () => {
       toast({
         title: 'Registration Successful!',
         description: res.user.pendingRoles?.length
-          ? `Account created. Note: Role(s) ${res.user.pendingRoles.join(', ')} require admin approval.`
-          : 'Welcome to Smart Farmer Platform!',
+          ? `Account created. Role(s) ${res.user.pendingRoles.join(', ')} require admin approval.`
+          : `Welcome to Smart Farmer Platform, ${res.user.name}!`,
         status: 'success',
         duration: 4000,
       });
@@ -193,14 +208,14 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       toast({
         title: 'Registration Failed',
-        description: err?.data?.detail || 'An error occurred during registration.',
+        description: err?.data?.detail || 'An error occurred during registration. User may already exist.',
         status: 'error',
       });
     }
   };
 
   return (
-    <Box minH="100vh" bgGradient="linear(to-b, gray.50, brand.50)" py={{ base: 6, md: 12 }} px={4} display="flex" alignItems="center">
+    <Box minH="100vh" bgGradient="linear(to-b, gray.50, brand.50)" py={{ base: 6, md: 10 }} px={4} display="flex" alignItems="center">
       <Container maxW="680px">
         <Card bg="white" shadow="2xl" borderRadius="3xl" borderWidth="1px" borderColor="brand.100" overflow="hidden">
           {/* Header branding */}
@@ -211,78 +226,86 @@ export const LoginPage: React.FC = () => {
               </Flex>
             </Flex>
             <Heading size="lg" color="brand.900" fontWeight="900" letterSpacing="-0.5px">
-              {t.appName}
+              Smart Farmer Platform
             </Heading>
             <Text fontSize="xs" color="gray.500" mt={1} fontWeight="medium">
-              Andhra Pradesh & Regional Agricultural Unified Gateway (Kurnool Pilot)
+              భారతీయ రైతు వేదిక • All-India APMC & Rayalaseema Pilot Unified Gateway
             </Text>
           </Box>
 
           <CardBody px={{ base: 6, md: 8 }} pt={2} pb={8}>
-            <VStack spacing={6} align="stretch">
-              {/* 1-Click Quick Demo Accounts Selector */}
-              <Box bg="gray.50" p={4} borderRadius="2xl" borderWidth="1px" borderColor="gray.200">
-                <Text fontSize="xs" fontWeight="bold" color="gray.700" mb={2}>
-                  1-Click Pilot Login (Click any role to test):
-                </Text>
-                <Flex wrap="wrap" gap={2}>
-                  {QUICK_DEMO_USERS.map((u) => (
-                    <Tag
-                      key={u.phone}
-                      size="md"
-                      colorScheme={u.colorScheme}
-                      borderRadius="full"
-                      cursor="pointer"
-                      transition="all 0.15s"
-                      _hover={{ transform: 'scale(1.05)', shadow: 'sm' }}
-                      onClick={() => handleQuickDemoClick(u)}
-                      py={1}
-                      px={3}
-                    >
-                      <TagLabel fontWeight="bold" fontSize="2xs">
-                        {u.name} ({u.desc})
-                      </TagLabel>
-                    </Tag>
-                  ))}
-                </Flex>
-                <Text fontSize="2xs" color="gray.500" mt={2}>
-                  Default password for all pilot accounts: <b>farm1234</b>
-                </Text>
-              </Box>
-
-              <Tabs isFitted variant="soft-rounded" colorScheme="brand" defaultIndex={0}>
-                <TabList mb={4} bg="gray.100" p={1} borderRadius="2xl">
+            <VStack spacing={5} align="stretch">
+              {/* Primary Tabs: Sign In / Register / OTP */}
+              <Tabs
+                isFitted
+                variant="solid-rounded"
+                colorScheme="brand"
+                index={tabIndex}
+                onChange={(idx) => setTabIndex(idx)}
+              >
+                <TabList mb={5} bg="gray.100" p={1.5} borderRadius="2xl">
                   <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
                     <Key size={14} style={{ marginRight: '6px' }} />
-                    Password Login
-                  </Tab>
-                  <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
-                    <Phone size={14} style={{ marginRight: '6px' }} />
-                    OTP Flow
+                    Sign In (లాగిన్)
                   </Tab>
                   <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
                     <UserPlus size={14} style={{ marginRight: '6px' }} />
-                    Register New
+                    Register (కొత్త నమోదు)
+                  </Tab>
+                  <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
+                    <Phone size={14} style={{ marginRight: '6px' }} />
+                    OTP Login
                   </Tab>
                 </TabList>
 
                 <TabPanels>
-                  {/* 1. Password Tab (Primary) */}
+                  {/* 1. SIGN IN (PASSWORD) */}
                   <TabPanel p={0}>
                     <Stack spacing={4}>
+                      {/* 1-Click Pilot Demo Badges */}
+                      <Box bg="gray.50" p={3.5} borderRadius="2xl" borderWidth="1px" borderColor="gray.200">
+                        <Text fontSize="xs" fontWeight="bold" color="gray.700" mb={2}>
+                          1-Click Pilot Demo Login (Click any role to test):
+                        </Text>
+                        <Flex wrap="wrap" gap={2}>
+                          {QUICK_DEMO_USERS.map((u) => (
+                            <Tag
+                              key={u.phone}
+                              size="md"
+                              colorScheme={u.colorScheme}
+                              borderRadius="full"
+                              cursor="pointer"
+                              transition="all 0.15s"
+                              _hover={{ transform: 'scale(1.05)', shadow: 'sm' }}
+                              onClick={() => handleQuickDemoClick(u)}
+                              py={1}
+                              px={3}
+                            >
+                              <TagLabel fontWeight="bold" fontSize="2xs">
+                                {u.name} ({u.desc})
+                              </TagLabel>
+                            </Tag>
+                          ))}
+                        </Flex>
+                        <Text fontSize="2xs" color="gray.500" mt={2}>
+                          Default password for all seeded pilot accounts: <b>farm1234</b>
+                        </Text>
+                      </Box>
+
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">{t.phone}</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number (ఫోన్ నంబర్)</FormLabel>
                         <Input
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="e.g. 9876543210"
                           size="md"
                           borderRadius="xl"
+                          type="tel"
                         />
                       </FormControl>
 
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">Password</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Password (పాస్వర్డ్)</FormLabel>
                         <Input
                           type="password"
                           value={password}
@@ -303,28 +326,203 @@ export const LoginPage: React.FC = () => {
                         shadow="md"
                         mt={2}
                       >
-                        Login with Password
+                        Sign In (లాగిన్ చేయండి)
                       </Button>
+
+                      <Flex justify="center" pt={2}>
+                        <Button
+                          variant="link"
+                          colorScheme="brand"
+                          fontSize="xs"
+                          fontWeight="bold"
+                          onClick={() => setTabIndex(1)}
+                        >
+                          New to Smart Farmer Platform? Register here →
+                        </Button>
+                      </Flex>
                     </Stack>
                   </TabPanel>
 
-                  {/* 2. OTP Tab */}
+                  {/* 2. REGISTER NEW ACCOUNT */}
+                  <TabPanel p={0}>
+                    <form onSubmit={handleRegister}>
+                      <Stack spacing={3.5}>
+                        <Alert status="info" borderRadius="xl" py={2} px={3} fontSize="xs">
+                          <AlertIcon boxSize="14px" />
+                          Register to access APMC market slot booking, godown e-NWR, veterinary visits, and agri calculators.
+                        </Alert>
+
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+                          <FormControl isRequired>
+                            <FormLabel fontSize="xs" fontWeight="bold">Full Name (పూర్తి పేరు)</FormLabel>
+                            <Input
+                              size="sm"
+                              borderRadius="lg"
+                              value={regName}
+                              onChange={(e) => setRegName(e.target.value)}
+                              placeholder="e.g. Siva Lokesh"
+                            />
+                          </FormControl>
+
+                          <FormControl isRequired>
+                            <FormLabel fontSize="xs" fontWeight="bold">10-Digit Mobile (మొబైల్ నంబర్)</FormLabel>
+                            <Input
+                              size="sm"
+                              borderRadius="lg"
+                              value={regPhone}
+                              onChange={(e) => setRegPhone(e.target.value)}
+                              placeholder="e.g. 9988776655"
+                              type="tel"
+                            />
+                          </FormControl>
+                        </SimpleGrid>
+
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+                          <FormControl isRequired>
+                            <FormLabel fontSize="xs" fontWeight="bold">Password (పాస్వర్డ్)</FormLabel>
+                            <Input
+                              type="password"
+                              size="sm"
+                              borderRadius="lg"
+                              value={regPassword}
+                              onChange={(e) => setRegPassword(e.target.value)}
+                              placeholder="Minimum 6 characters"
+                            />
+                          </FormControl>
+
+                          <FormControl>
+                            <FormLabel fontSize="xs" fontWeight="bold">Email (Optional)</FormLabel>
+                            <Input
+                              type="email"
+                              size="sm"
+                              borderRadius="lg"
+                              value={regEmail}
+                              onChange={(e) => setRegEmail(e.target.value)}
+                              placeholder="farmer@example.com"
+                            />
+                          </FormControl>
+                        </SimpleGrid>
+
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+                          <FormControl isRequired>
+                            <FormLabel fontSize="xs" fontWeight="bold">State (రాష్ట్రం)</FormLabel>
+                            <Select
+                              size="sm"
+                              borderRadius="lg"
+                              value={regState}
+                              onChange={(e) => setRegState(e.target.value)}
+                            >
+                              <option value="Andhra Pradesh">Andhra Pradesh</option>
+                              <option value="Telangana">Telangana</option>
+                              <option value="Karnataka">Karnataka</option>
+                              <option value="Tamil Nadu">Tamil Nadu</option>
+                              <option value="Maharashtra">Maharashtra</option>
+                            </Select>
+                          </FormControl>
+
+                          <FormControl isRequired>
+                            <FormLabel fontSize="xs" fontWeight="bold">District (జిల్లా)</FormLabel>
+                            <Input
+                              size="sm"
+                              borderRadius="lg"
+                              value={regDistrict}
+                              onChange={(e) => setRegDistrict(e.target.value)}
+                              placeholder="e.g. Kurnool, Nandyal"
+                            />
+                          </FormControl>
+                        </SimpleGrid>
+
+                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
+                          <FormControl>
+                            <FormLabel fontSize="xs" fontWeight="bold">Mandal (మండలం)</FormLabel>
+                            <Input
+                              size="sm"
+                              borderRadius="lg"
+                              value={regMandal}
+                              onChange={(e) => setRegMandal(e.target.value)}
+                              placeholder="e.g. Kurnool Rural"
+                            />
+                          </FormControl>
+
+                          <FormControl>
+                            <FormLabel fontSize="xs" fontWeight="bold">Village (గ్రామం)</FormLabel>
+                            <Input
+                              size="sm"
+                              borderRadius="lg"
+                              value={regVillage}
+                              onChange={(e) => setRegVillage(e.target.value)}
+                              placeholder="e.g. Ulchala"
+                            />
+                          </FormControl>
+                        </SimpleGrid>
+
+                        <FormControl isRequired>
+                          <FormLabel fontSize="xs" fontWeight="bold">Select Role(s) (మీ పాత్రను ఎంచుకోండి)</FormLabel>
+                          <CheckboxGroup
+                            value={selectedRoles}
+                            onChange={(vals) => setSelectedRoles(vals.length > 0 ? (vals as string[]) : ['FARMER'])}
+                          >
+                            <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={2} bg="gray.50" p={3} borderRadius="xl" borderWidth="1px" borderColor="gray.200">
+                              {ALL_ROLES_OPTIONS.map((r) => (
+                                <Checkbox key={r.role} value={r.role} colorScheme="brand" size="sm">
+                                  <Text fontSize="xs">
+                                    {r.label}
+                                    {r.privileged && (
+                                      <Badge ml={1} colorScheme="purple" fontSize="3xs">Approval Req.</Badge>
+                                    )}
+                                  </Text>
+                                </Checkbox>
+                              ))}
+                            </SimpleGrid>
+                          </CheckboxGroup>
+                        </FormControl>
+
+                        <Button
+                          type="submit"
+                          colorScheme="brand"
+                          size="md"
+                          borderRadius="xl"
+                          fontWeight="bold"
+                          isLoading={isRegistering}
+                          shadow="md"
+                          mt={2}
+                        >
+                          Complete Registration & Sign In (నమోదు పూర్తి చేయండి)
+                        </Button>
+
+                        <Flex justify="center" pt={1}>
+                          <Button
+                            variant="link"
+                            colorScheme="brand"
+                            fontSize="xs"
+                            fontWeight="bold"
+                            onClick={() => setTabIndex(0)}
+                          >
+                            Already registered? Sign In with Phone & Password →
+                          </Button>
+                        </Flex>
+                      </Stack>
+                    </form>
+                  </TabPanel>
+
+                  {/* 3. OTP VERIFICATION */}
                   <TabPanel p={0}>
                     <Stack spacing={4}>
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">{t.phone}</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number (ఫోన్ నంబర్)</FormLabel>
                         <Input
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="e.g., 9876543210"
                           size="md"
                           borderRadius="xl"
+                          type="tel"
                         />
                       </FormControl>
 
                       {otpSent && (
                         <FormControl isRequired>
-                          <FormLabel fontSize="xs" fontWeight="bold">{t.otp}</FormLabel>
+                          <FormLabel fontSize="xs" fontWeight="bold">6-Digit OTP</FormLabel>
                           <Input
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
@@ -343,7 +541,7 @@ export const LoginPage: React.FC = () => {
                           size="md"
                           borderRadius="xl"
                         >
-                          {t.sendOtp}
+                          Send OTP (OTP పంపండి)
                         </Button>
                       ) : (
                         <Button
@@ -353,111 +551,22 @@ export const LoginPage: React.FC = () => {
                           size="md"
                           borderRadius="xl"
                         >
-                          {t.verifyOtp}
+                          Verify OTP & Sign In (ధృవీకరించండి)
                         </Button>
                       )}
-                    </Stack>
-                  </TabPanel>
 
-                  {/* 3. Register Tab */}
-                  <TabPanel p={0}>
-                    <form onSubmit={handleRegister}>
-                      <Stack spacing={3}>
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
-                          <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">Full Name</FormLabel>
-                            <Input
-                              size="sm"
-                              borderRadius="lg"
-                              value={regName}
-                              onChange={(e) => setRegName(e.target.value)}
-                              placeholder="e.g. Ramesh Reddy"
-                            />
-                          </FormControl>
-
-                          <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">{t.phone}</FormLabel>
-                            <Input
-                              size="sm"
-                              borderRadius="lg"
-                              value={regPhone}
-                              onChange={(e) => setRegPhone(e.target.value)}
-                              placeholder="10-digit mobile"
-                            />
-                          </FormControl>
-                        </SimpleGrid>
-
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
-                          <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold">Email (Optional)</FormLabel>
-                            <Input
-                              size="sm"
-                              borderRadius="lg"
-                              type="email"
-                              value={regEmail}
-                              onChange={(e) => setRegEmail(e.target.value)}
-                              placeholder="farmer@example.com"
-                            />
-                          </FormControl>
-
-                          <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">Create Password</FormLabel>
-                            <Input
-                              size="sm"
-                              borderRadius="lg"
-                              type="password"
-                              value={regPassword}
-                              onChange={(e) => setRegPassword(e.target.value)}
-                              placeholder="Min 6 characters"
-                            />
-                          </FormControl>
-                        </SimpleGrid>
-
-                        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
-                          <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">State</FormLabel>
-                            <Select size="sm" borderRadius="lg" value={regState} onChange={(e) => setRegState(e.target.value)}>
-                              <option value="Andhra Pradesh">Andhra Pradesh</option>
-                              <option value="Telangana">Telangana</option>
-                              <option value="Karnataka">Karnataka</option>
-                            </Select>
-                          </FormControl>
-
-                          <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">District</FormLabel>
-                            <Input size="sm" borderRadius="lg" value={regDistrict} onChange={(e) => setRegDistrict(e.target.value)} />
-                          </FormControl>
-                        </SimpleGrid>
-
-                        <FormControl isRequired>
-                          <FormLabel fontSize="xs" fontWeight="bold">Select Role(s)</FormLabel>
-                          <CheckboxGroup value={selectedRoles} onChange={(vals) => setSelectedRoles(vals as string[])}>
-                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} maxH="160px" overflowY="auto" p={2} bg="gray.50" borderRadius="lg">
-                              {ALL_ROLES_OPTIONS.map((r) => (
-                                <Checkbox key={r.role} value={r.role} size="sm">
-                                  <Text fontSize="2xs">
-                                    {r.label}
-                                    {r.privileged && <Badge ml={1} colorScheme="orange" fontSize="3xs">Admin Approval</Badge>}
-                                  </Text>
-                                </Checkbox>
-                              ))}
-                            </SimpleGrid>
-                          </CheckboxGroup>
-                        </FormControl>
-
+                      <Flex justify="center" pt={1}>
                         <Button
-                          type="submit"
+                          variant="link"
                           colorScheme="brand"
-                          isLoading={isRegistering}
-                          size="md"
-                          borderRadius="xl"
-                          mt={2}
+                          fontSize="xs"
                           fontWeight="bold"
+                          onClick={() => setTabIndex(0)}
                         >
-                          Create Account
+                          Back to Password Login →
                         </Button>
-                      </Stack>
-                    </form>
+                      </Flex>
+                    </Stack>
                   </TabPanel>
                 </TabPanels>
               </Tabs>
