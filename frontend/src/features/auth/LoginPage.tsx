@@ -56,7 +56,7 @@ const QUICK_DEMO_USERS = [
 ];
 
 const ALL_ROLES_OPTIONS: { role: UserRole; label: string; privileged: boolean }[] = [
-  { role: 'FARMER', label: 'Farmer (రైతు)', privileged: false },
+  { role: 'FARMER', label: 'Farmer', privileged: false },
   { role: 'CROP_BUYER', label: 'Crop Buyer / Mandi Trader', privileged: false },
   { role: 'CROP_SELLER', label: 'Crop Seller / Input Dealer', privileged: false },
   { role: 'LIVESTOCK_BUYER', label: 'Livestock Buyer', privileged: false },
@@ -67,7 +67,7 @@ const ALL_ROLES_OPTIONS: { role: UserRole; label: string; privileged: boolean }[
   { role: 'MARKET_STAFF', label: 'Market Yard Staff (APMC Gate)', privileged: true },
   { role: 'GODOWN_OPERATOR', label: 'Godown Operator (Warehouse)', privileged: true },
   { role: 'DELIVERY_WORKER', label: 'Delivery & Field Logistics', privileged: false },
-  { role: 'HELP_DESK_OPERATOR', label: 'Help Desk / RBK Operator', privileged: true },
+  { role: 'HELP_DESK_OPERATOR', label: 'Help Desk / Scheme Operator', privileged: true },
   { role: 'ADMIN', label: 'District Admin / Collectorate', privileged: true },
 ];
 
@@ -77,7 +77,7 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) => {
   const { language } = useSelector((state: RootState) => state.auth);
-  const t = translations[language];
+  const t = translations[language] || translations.en;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();
@@ -229,7 +229,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
               Smart Farmer Platform
             </Heading>
             <Text fontSize="xs" color="gray.500" mt={1} fontWeight="medium">
-              భారతీయ రైతు వేదిక • All-India APMC & Rayalaseema Pilot Unified Gateway
+              National Agricultural Gateway • All-India APMC Markets & Farmer Services
             </Text>
           </Box>
 
@@ -246,11 +246,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                 <TabList mb={5} bg="gray.100" p={1.5} borderRadius="2xl">
                   <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
                     <Key size={14} style={{ marginRight: '6px' }} />
-                    Sign In (లాగిన్)
+                    Sign In
                   </Tab>
                   <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
                     <UserPlus size={14} style={{ marginRight: '6px' }} />
-                    Register (కొత్త నమోదు)
+                    Register
                   </Tab>
                   <Tab fontSize="xs" fontWeight="bold" borderRadius="xl">
                     <Phone size={14} style={{ marginRight: '6px' }} />
@@ -293,7 +293,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                       </Box>
 
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number (ఫోన్ నంబర్)</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number</FormLabel>
                         <Input
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
@@ -305,7 +305,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                       </FormControl>
 
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">Password (పాస్వర్డ్)</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Password</FormLabel>
                         <Input
                           type="password"
                           value={password}
@@ -326,7 +326,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                         shadow="md"
                         mt={2}
                       >
-                        Sign In (లాగిన్ చేయండి)
+                        Sign In
                       </Button>
 
                       <Flex justify="center" pt={2}>
@@ -349,12 +349,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                       <Stack spacing={3.5}>
                         <Alert status="info" borderRadius="xl" py={2} px={3} fontSize="xs">
                           <AlertIcon boxSize="14px" />
-                          Register to access APMC market slot booking, godown e-NWR, veterinary visits, and agri calculators.
+                          Register to access APMC market slot booking, godown storage, veterinary visits, and agri calculators.
                         </Alert>
 
                         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
                           <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">Full Name (పూర్తి పేరు)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">Full Name</FormLabel>
                             <Input
                               size="sm"
                               borderRadius="lg"
@@ -365,7 +365,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           </FormControl>
 
                           <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">10-Digit Mobile (మొబైల్ నంబర్)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">10-Digit Mobile Number</FormLabel>
                             <Input
                               size="sm"
                               borderRadius="lg"
@@ -379,7 +379,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
 
                         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
                           <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">Password (పాస్వర్డ్)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">Password</FormLabel>
                             <Input
                               type="password"
                               size="sm"
@@ -405,7 +405,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
 
                         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
                           <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">State (రాష్ట్రం)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">State</FormLabel>
                             <Select
                               size="sm"
                               borderRadius="lg"
@@ -421,7 +421,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           </FormControl>
 
                           <FormControl isRequired>
-                            <FormLabel fontSize="xs" fontWeight="bold">District (జిల్లా)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">District</FormLabel>
                             <Input
                               size="sm"
                               borderRadius="lg"
@@ -434,7 +434,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
 
                         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3}>
                           <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold">Mandal (మండలం)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">Mandal</FormLabel>
                             <Input
                               size="sm"
                               borderRadius="lg"
@@ -445,7 +445,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           </FormControl>
 
                           <FormControl>
-                            <FormLabel fontSize="xs" fontWeight="bold">Village (గ్రామం)</FormLabel>
+                            <FormLabel fontSize="xs" fontWeight="bold">Village</FormLabel>
                             <Input
                               size="sm"
                               borderRadius="lg"
@@ -457,7 +457,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                         </SimpleGrid>
 
                         <FormControl isRequired>
-                          <FormLabel fontSize="xs" fontWeight="bold">Select Role(s) (మీ పాత్రను ఎంచుకోండి)</FormLabel>
+                          <FormLabel fontSize="xs" fontWeight="bold">Select Role(s)</FormLabel>
                           <CheckboxGroup
                             value={selectedRoles}
                             onChange={(vals) => setSelectedRoles(vals.length > 0 ? (vals as string[]) : ['FARMER'])}
@@ -487,7 +487,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           shadow="md"
                           mt={2}
                         >
-                          Complete Registration & Sign In (నమోదు పూర్తి చేయండి)
+                          Complete Registration & Sign In
                         </Button>
 
                         <Flex justify="center" pt={1}>
@@ -509,7 +509,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                   <TabPanel p={0}>
                     <Stack spacing={4}>
                       <FormControl isRequired>
-                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number (ఫోన్ నంబర్)</FormLabel>
+                        <FormLabel fontSize="xs" fontWeight="bold">Mobile Number</FormLabel>
                         <Input
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
@@ -541,7 +541,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           size="md"
                           borderRadius="xl"
                         >
-                          Send OTP (OTP పంపండి)
+                          Send OTP
                         </Button>
                       ) : (
                         <Button
@@ -551,7 +551,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ defaultTab = 'login' }) =>
                           size="md"
                           borderRadius="xl"
                         >
-                          Verify OTP & Sign In (ధృవీకరించండి)
+                          Verify OTP & Sign In
                         </Button>
                       )}
 
