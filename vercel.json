@@ -18,9 +18,31 @@
       }
     },
     {
+      "source": "/assets/(.*)",
+      "destination": {
+        "service": "frontend",
+        "path": "/assets/$1"
+      }
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": {
+        "service": "frontend",
+        "path": "/favicon.svg"
+      }
+    },
+    {
+      "source": "/icons.svg",
+      "destination": {
+        "service": "frontend",
+        "path": "/icons.svg"
+      }
+    },
+    {
       "source": "/(.*)",
       "destination": {
-        "service": "frontend"
+        "service": "frontend",
+        "path": "/index.html"
       }
     }
   ]
