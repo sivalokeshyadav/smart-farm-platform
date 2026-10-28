@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 import { appRoutesConfig } from './routeConfig';
 import { ROUTES } from './paths';
+import { LoginPage } from '../features/auth/LoginPage';
+import { NotFoundPage } from './NotFoundPage';
 
 export const AppRoutes: React.FC = () => {
   const { activeRole, token } = useSelector((state: RootState) => state.auth);
@@ -11,38 +13,43 @@ export const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      {appRoutesConfig.map((route) => {
-        // Login route is always accessible
-        if (route.path === ROUTES.LOGIN) {
-          return <Route key={route.path} path={route.path} element={route.element} />;
-        }
+      {/* Explicit Login Routes */}
+      <Route
+        path={ROUTES.LOGIN}
+        element={!isAuthenticated ? <LoginPage /> : <Navigate to={ROUTES.HOME} replace />}
+      />
+      <Route
+        path="/login/"
+        element={<Navigate to={ROUTES.LOGIN} replace />}
+      />
 
-        // Catch-all or not-found
-        if (route.path === '*') {
-          return <Route key={route.path} path={route.path} element={route.element} />;
-        }
+      {/* Authenticated application routes */}
+      {appRoutesConfig
+        .filter((r) => r.path !== ROUTES.LOGIN && r.path !== '*')
+        .map((route) => {
+          if (!isAuthenticated) {
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<Navigate to={ROUTES.LOGIN} replace />}
+              />
+            );
+          }
 
-        // If not logged in, redirect to login page
-        if (!isAuthenticated) {
+          // If logged in, check role permissions
+          const isAllowed = !route.allowedRoles || route.allowedRoles.includes(activeRole);
           return (
             <Route
               key={route.path}
               path={route.path}
-              element={<Navigate to={ROUTES.LOGIN} replace />}
+              element={isAllowed ? route.element : <Navigate to={ROUTES.HOME} replace />}
             />
           );
-        }
+        })}
 
-        // If logged in, check role permissions
-        const isAllowed = !route.allowedRoles || route.allowedRoles.includes(activeRole);
-        return (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={isAllowed ? route.element : <Navigate to={ROUTES.HOME} replace />}
-          />
-        );
-      })}
+      {/* Catch-all 404 Route */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
